@@ -1,12 +1,16 @@
 package com.hemkar.connect3;
 
-import android.support.v7.app.AppCompatActivity;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.graphics.Typeface;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.GridLayout;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
     //0 is for yellow.
@@ -14,12 +18,25 @@ public class MainActivity extends AppCompatActivity {
     Boolean gameIsActive=true;
     int[] gameState={2,2,2,2,2,2,2,2,2};
     int[][] winingPositions={{0,1,2},{3,4,5},{6,7,8},{0,3,6},{1,4,7},{2,5,8},{0,4,8},{2,4,6}};
+    public static final String MyPREFERENCES = "MyPrefs" ;
+    SharedPreferences sharedpreferences;
+    public static final int YSCORE=0;
+    public static final int RSCORE=0;
+    int yellowScore=0;
+    int redScore=0;
+    TextView mYellowScoreBoard;
+    TextView mRedScoreBoard;
 
     public void dropIn(View view) {
 
         ImageView counter = (ImageView) view;
 
+        /*yellowScore=sharedpreferences.getInt("YSCORE",0);
+        redScore=sharedpreferences.getInt("RSCORE",0);
+        Log.i("yellowScore",Integer.toString(yellowScore));
+        Log.i("redScore", Integer.toString(redScore));*/
 
+        SharedPreferences.Editor editor= sharedpreferences.edit();
         int tappedCounter = Integer.parseInt(counter.getTag().toString());
         if (gameState[tappedCounter] == 2 && gameIsActive==true) {
             counter.setTranslationY(-1000f);
@@ -37,11 +54,20 @@ public class MainActivity extends AppCompatActivity {
             for(int[] winingPosition: winingPositions){
                if(gameState[winingPosition[0]]==gameState[winingPosition[1]] &&gameState[winingPosition[1]]==gameState[winingPosition[2]] && gameState[winingPosition[0]]!=2){
                     String winner="Cross";
-                   gameIsActive=false;
                    if(gameState[winingPosition[0]]==0){
                         winner="Zero";
+                       editor.putInt("YSCORE",++yellowScore);
+                       gameIsActive=false;
+                   }
+                   else{
+                       editor.putInt("RSCORE",++redScore);
+                       gameIsActive=false;
 
                    }
+                   editor.commit();
+                   mYellowScoreBoard.setText("0's score : "+Integer.toString(yellowScore));
+                   mRedScoreBoard.setText("X's score :"+Integer.toString(redScore));
+
                    TextView winnertext= (TextView)findViewById(R.id.winnerMessage);
                    winnertext.setText(winner + " is winner.");
                    LinearLayout layout= (LinearLayout) findViewById(R.id.playAgainLayout);
@@ -85,5 +111,18 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        mYellowScoreBoard= (TextView) findViewById(R.id.yellowScoreBoadr);
+        mRedScoreBoard= (TextView) findViewById(R.id.redScoreBoard);
+        mYellowScoreBoard.setTypeface(null, Typeface.BOLD);
+        mRedScoreBoard.setTypeface(null, Typeface.BOLD);
+
+        sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
+        yellowScore=sharedpreferences.getInt("YSCORE",0);
+        redScore=sharedpreferences.getInt("RSCORE",0);
+        Log.i("yellowScore",Integer.toString(yellowScore));
+        Log.i("redScore", Integer.toString(redScore));
+
+        mYellowScoreBoard.setText("0's Score : "+Integer.toString(yellowScore));
+        mRedScoreBoard.setText("X's Score :"+Integer.toString(redScore));
     }
 }
