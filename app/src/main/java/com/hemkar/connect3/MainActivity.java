@@ -20,22 +20,17 @@ public class MainActivity extends AppCompatActivity {
     int[][] winingPositions={{0,1,2},{3,4,5},{6,7,8},{0,3,6},{1,4,7},{2,5,8},{0,4,8},{2,4,6}};
     public static final String MyPREFERENCES = "MyPrefs" ;
     SharedPreferences sharedpreferences;
-    public static final int YSCORE=0;
-    public static final int RSCORE=0;
-    int yellowScore=0;
-    int redScore=0;
-    TextView mYellowScoreBoard;
-    TextView mRedScoreBoard;
+    public static final int SCORE_ZERO=0;
+    public static final int SCORE_CROSS=0;
+    int scoreZero=0;
+    int scoreCross=0;
+    TextView mscoreZeroBoard;
+    TextView mscoreCrossBoard;
 
     public void dropIn(View view) {
 
         ImageView counter = (ImageView) view;
-
-        /*yellowScore=sharedpreferences.getInt("YSCORE",0);
-        redScore=sharedpreferences.getInt("RSCORE",0);
-        Log.i("yellowScore",Integer.toString(yellowScore));
-        Log.i("redScore", Integer.toString(redScore));*/
-
+        
         SharedPreferences.Editor editor= sharedpreferences.edit();
         int tappedCounter = Integer.parseInt(counter.getTag().toString());
         if (gameState[tappedCounter] == 2 && gameIsActive==true) {
@@ -52,42 +47,42 @@ public class MainActivity extends AppCompatActivity {
             counter.animate().translationYBy(1000f).rotation(100).setDuration(300);
 
             for(int[] winingPosition: winingPositions){
-               if(gameState[winingPosition[0]]==gameState[winingPosition[1]] &&gameState[winingPosition[1]]==gameState[winingPosition[2]] && gameState[winingPosition[0]]!=2){
+                if(gameState[winingPosition[0]]==gameState[winingPosition[1]] &&gameState[winingPosition[1]]==gameState[winingPosition[2]] && gameState[winingPosition[0]]!=2){
                     String winner="Cross";
-                   if(gameState[winingPosition[0]]==0){
+                    if(gameState[winingPosition[0]]==0){
                         winner="Zero";
-                       editor.putInt("YSCORE",++yellowScore);
-                       gameIsActive=false;
-                   }
-                   else{
-                       editor.putInt("RSCORE",++redScore);
-                       gameIsActive=false;
+                        editor.putInt("SCORE_ZERO",++scoreZero);
+                        gameIsActive=false;
+                    }
+                    else{
+                        editor.putInt("SCORE_CROSS",++scoreCross);
+                        gameIsActive=false;
 
-                   }
-                   editor.commit();
-                   mYellowScoreBoard.setText("0's score : "+Integer.toString(yellowScore));
-                   mRedScoreBoard.setText("X's score :"+Integer.toString(redScore));
+                    }
+                    editor.commit();
+                    mscoreZeroBoard.setText("0's score : "+Integer.toString(scoreZero));
+                    mscoreCrossBoard.setText("X's score :"+Integer.toString(scoreCross));
 
-                   TextView winnertext= (TextView)findViewById(R.id.winnerMessage);
-                   winnertext.setText(winner + " is winner.");
-                   LinearLayout layout= (LinearLayout) findViewById(R.id.playAgainLayout);
-                   layout.setVisibility(View.VISIBLE);
+                    TextView winnertext= (TextView)findViewById(R.id.winnerMessage);
+                    winnertext.setText(winner + " is winner.");
+                    LinearLayout layout= (LinearLayout) findViewById(R.id.playAgainLayout);
+                    layout.setVisibility(View.VISIBLE);
 
 
-               }else{
-                   boolean isOver=true;
-                   for(int counterState:gameState){
-                       if(counterState==2){
-                           isOver=false;
-                       }
-                   }
-                   if(isOver){
-                       TextView winnertext= (TextView)findViewById(R.id.winnerMessage);
-                       winnertext.setText("Its a draw.");
-                       LinearLayout layout= (LinearLayout) findViewById(R.id.playAgainLayout);
-                       layout.setVisibility(View.VISIBLE);
-                   }
-               }
+                }else{
+                    boolean isOver=true;
+                    for(int counterState:gameState){
+                        if(counterState==2){
+                            isOver=false;
+                        }
+                    }
+                    if(isOver){
+                        TextView winnertext= (TextView)findViewById(R.id.winnerMessage);
+                        winnertext.setText("Its a draw.");
+                        LinearLayout layout= (LinearLayout) findViewById(R.id.playAgainLayout);
+                        layout.setVisibility(View.VISIBLE);
+                    }
+                }
             }
         }
     }
@@ -111,18 +106,18 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mYellowScoreBoard= (TextView) findViewById(R.id.yellowScoreBoadr);
-        mRedScoreBoard= (TextView) findViewById(R.id.redScoreBoard);
-        mYellowScoreBoard.setTypeface(null, Typeface.BOLD);
-        mRedScoreBoard.setTypeface(null, Typeface.BOLD);
+        mscoreZeroBoard= (TextView) findViewById(R.id.yellowScoreBoadr);
+        mscoreCrossBoard= (TextView) findViewById(R.id.redScoreBoard);
+        mscoreZeroBoard.setTypeface(null, Typeface.BOLD);
+        mscoreCrossBoard.setTypeface(null, Typeface.BOLD);
 
         sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
-        yellowScore=sharedpreferences.getInt("YSCORE",0);
-        redScore=sharedpreferences.getInt("RSCORE",0);
-        Log.i("yellowScore",Integer.toString(yellowScore));
-        Log.i("redScore", Integer.toString(redScore));
+        scoreZero=sharedpreferences.getInt("SCORE_ZERO",0);
+        scoreCross=sharedpreferences.getInt("SCORE_CROSS",0);
+        Log.i("scoreZero",Integer.toString(scoreZero));
+        Log.i("scoreCross", Integer.toString(scoreCross));
 
-        mYellowScoreBoard.setText("0's Score : "+Integer.toString(yellowScore));
-        mRedScoreBoard.setText("X's Score :"+Integer.toString(redScore));
+        mscoreZeroBoard.setText("0's Score : "+Integer.toString(scoreZero));
+        mscoreCrossBoard.setText("X's Score :"+Integer.toString(scoreCross));
     }
 }
