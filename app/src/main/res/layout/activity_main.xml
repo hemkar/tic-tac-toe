@@ -169,6 +169,7 @@
             android:layout_height="wrap_content"
             android:text="Reset Score"
             android:layout_gravity="center"
+            android:onClick="clearScore"
             />
         </LinearLayout>
 

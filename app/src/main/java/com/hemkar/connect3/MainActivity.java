@@ -27,10 +27,11 @@ public class MainActivity extends AppCompatActivity {
     TextView mscoreZeroBoard;
     TextView mscoreCrossBoard;
 
+
     public void dropIn(View view) {
 
         ImageView counter = (ImageView) view;
-        
+
         SharedPreferences.Editor editor= sharedpreferences.edit();
         int tappedCounter = Integer.parseInt(counter.getTag().toString());
         if (gameState[tappedCounter] == 2 && gameIsActive==true) {
@@ -60,8 +61,8 @@ public class MainActivity extends AppCompatActivity {
 
                     }
                     editor.commit();
-                    mscoreZeroBoard.setText("0's score : "+Integer.toString(scoreZero));
-                    mscoreCrossBoard.setText("X's score :"+Integer.toString(scoreCross));
+                    mscoreZeroBoard.setText("0's Score : "+Integer.toString(scoreZero));
+                    mscoreCrossBoard.setText("X's Score :"+Integer.toString(scoreCross));
 
                     TextView winnertext= (TextView)findViewById(R.id.winnerMessage);
                     winnertext.setText(winner + " is winner.");
@@ -102,6 +103,19 @@ public class MainActivity extends AppCompatActivity {
             ((ImageView)grid.getChildAt(i)).setImageResource(0);
         }
     }
+
+    public void clearScore(View view){
+        Log.i("MSG","inside clearscore method");
+        SharedPreferences.Editor editor1= sharedpreferences.edit();
+        editor1.clear();
+        editor1.commit();
+        scoreZero=sharedpreferences.getInt("SCORE_ZERO",0);
+        scoreCross=sharedpreferences.getInt("SCORE_CROSS",0);
+        mscoreZeroBoard.setText("0's Score : "+Integer.toString(scoreZero));
+        mscoreCrossBoard.setText("X's Score :"+Integer.toString(scoreCross));
+        //playAgain(view);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
