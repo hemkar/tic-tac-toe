@@ -1,16 +1,16 @@
 package com.hemkar.connect3;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.animation.AnimatorSet;
-import android.animation.ObjectAnimator;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
 import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -34,6 +34,7 @@ public class MainActivity extends AppCompatActivity  {
     int scoreCross=0;
     TextView mscoreZeroBoard;
     TextView mscoreCrossBoard;
+    final Context context = this;
 
     ImageView imageView0;
     ImageView imageView1;
@@ -45,7 +46,11 @@ public class MainActivity extends AppCompatActivity  {
     ImageView imageView7;
     ImageView imageView8;
 
-    final AnimatorSet mAnimationSet = new AnimatorSet();
+    int i;
+    int j;
+    int k;
+
+    AlphaAnimation alphaAnimation;
 
 
     public void dropIn(View view) {
@@ -69,9 +74,9 @@ public class MainActivity extends AppCompatActivity  {
             for(int[] winingPosition: winingPositions){
                 if(gameState[winingPosition[0]]==gameState[winingPosition[1]] &&gameState[winingPosition[1]]==gameState[winingPosition[2]] && gameState[winingPosition[0]]!=2){
                     String winner="Cross";
-                    int i=winingPosition[0];
-                    int j=winingPosition[1];
-                    int k=winingPosition[2];
+                    i=winingPosition[0];
+                    j=winingPosition[1];
+                    k=winingPosition[2];
                     Log.i("position",Integer.toString(i)+" "+Integer.toString(j)+" "+Integer.toString(k));
                     if(i==0 && j==1 && k==2){
                         startAnimation(imageView0);
@@ -85,9 +90,6 @@ public class MainActivity extends AppCompatActivity  {
                         startAnimation(imageView6);
                         startAnimation(imageView7);
                         startAnimation(imageView8);
-                        /*imageView6.setBackgroundColor(0xFF00FF00);
-                        imageView7.setBackgroundColor(0xFF00FF00);
-                        imageView8.setBackgroundColor(0xFF00FF00);*/
                     }else if(i==0 && j== 3 && k==6){
 
                         startAnimation(imageView0);
@@ -154,17 +156,25 @@ public class MainActivity extends AppCompatActivity  {
     }
 
     public void playAgain(View view){
+
+
+            imageView0.clearAnimation();
+            imageView1.clearAnimation();
+            imageView2.clearAnimation();
+            imageView3.clearAnimation();
+            imageView4.clearAnimation();
+            imageView5.clearAnimation();
+            imageView6.clearAnimation();
+            imageView7.clearAnimation();
+            imageView8.clearAnimation();
+
+
         gameIsActive=true;
         LinearLayout layout= (LinearLayout) findViewById(R.id.playAgainLayout);
         layout.setVisibility(View.INVISIBLE);
-        /*mAnimationSet.removeAllListeners();
-        mAnimationSet.end();
-        mAnimationSet.cancel();*/
-
         activePlayer=0;
         for(int i=0;i< gameState.length; i++){
             gameState[i]=2;
-
         }
 
         GridLayout grid= (GridLayout) findViewById(R.id.gridLayout);
@@ -175,35 +185,46 @@ public class MainActivity extends AppCompatActivity  {
 
     void startAnimation(View myView){
 
-        ObjectAnimator fadeOut = ObjectAnimator.ofFloat(myView, "alpha",  1f, .0f);
-        fadeOut.setDuration(500);
-        ObjectAnimator fadeIn = ObjectAnimator.ofFloat(myView, "alpha", .0f, 1f);
-        fadeIn.setDuration(500);
+        alphaAnimation = new AlphaAnimation(0.0f, 1.0f);
+        alphaAnimation.setDuration(500);
+        alphaAnimation.setRepeatCount(Animation.INFINITE);
+        alphaAnimation.setRepeatMode(Animation.REVERSE);
+        myView.startAnimation(alphaAnimation);
 
-        //final AnimatorSet mAnimationSet = new AnimatorSet();
-
-        mAnimationSet.play(fadeIn).after(fadeOut);
-        //mAnimationSet.setDuration(2000);
-        mAnimationSet.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                super.onAnimationEnd(animation);
-                mAnimationSet.start();
-            }
-        });
-        mAnimationSet.start();
-        //mAnimationSet.setDuration(2000);
     }
 
     public void clearScore(View view){
+        AlertDialog.Builder builder1 = new AlertDialog.Builder(context);
+        builder1.setTitle("Reset score");
+        builder1.setMessage("Are you sure you want to reset score");
+        builder1.setCancelable(true);
+
+        builder1.setPositiveButton(
+                "Yes",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        SharedPreferences.Editor editor1= sharedpreferences.edit();
+                        editor1.clear();
+                        editor1.commit();
+                        scoreZero=sharedpreferences.getInt("SCORE_ZERO",0);
+                        scoreCross=sharedpreferences.getInt("SCORE_CROSS",0);
+                        mscoreZeroBoard.setText("0's Score : "+Integer.toString(scoreZero));
+                        mscoreCrossBoard.setText("X's Score :"+Integer.toString(scoreCross));
+                    }
+                });
+
+        builder1.setNegativeButton(
+                "No",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                });
+        AlertDialog alert11 = builder1.create();
+        alert11.show();
+
         Log.i("MSG","inside clearscore method");
-        SharedPreferences.Editor editor1= sharedpreferences.edit();
-        editor1.clear();
-        editor1.commit();
-        scoreZero=sharedpreferences.getInt("SCORE_ZERO",0);
-        scoreCross=sharedpreferences.getInt("SCORE_CROSS",0);
-        mscoreZeroBoard.setText("0's Score : "+Integer.toString(scoreZero));
-        mscoreCrossBoard.setText("X's Score :"+Integer.toString(scoreCross));
+
         //playAgain(view);
     }
 
